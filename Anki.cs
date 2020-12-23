@@ -1,6 +1,5 @@
 ﻿using AnkiSharp.Helpers;
 using AnkiSharp.Models;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Info = System.Tuple<string, string, AnkiSharp.Models.FieldList>;
 
@@ -143,7 +143,7 @@ namespace AnkiSharp
 
             CreateZipFile(path);
         }
-        
+
         /// <summary>
         /// Creates an AnkiItem and add it to the Anki object
         /// </summary>
@@ -158,20 +158,20 @@ namespace AnkiSharp
                 {
                     mid = myEnumerator.Key.ToString();
                     break;
-                }   
+                }
             }
 
             if (mid == "" || (_infoPerMid.Contains(mid) && properties.Length != (_infoPerMid[mid] as Info).Item3.Count))
                 throw new ArgumentException("Number of fields provided is not the same as the one expected");
-            
-            AnkiItem item = new AnkiItem((_infoPerMid[mid] as Info).Item3, properties)
-            {
-                Mid = mid
-            };
 
-            if (ContainsItem(item) == true)
+            AnkiItem item = new AnkiItem((_infoPerMid[mid] as Info).Item3, properties)
+                            {
+                                Mid = mid
+                            };
+
+            if (ContainsItem(item))
                 return;
-            
+
             _ankiItems.Add(item);
         }
 
@@ -404,9 +404,12 @@ namespace AnkiSharp
                         if (_mediaInfo.extension == ".gif" && _mediaInfo.cultureInfo.Name == "zh-CN")
                             StrokeOrderHelper.DownloadImage(Path.Combine(_path, i.ToString()), item[_mediaInfo.field].ToString());
                         else if (_mediaInfo.extension == ".wav")
-                            SynthetizerHelper.CreateAudio(Path.Combine(_path, i.ToString()), item[_mediaInfo.field].ToString(), _mediaInfo.cultureInfo, _mediaInfo.audioFormat);
+                        {
+                            throw new NotSupportedException("Need migrate to .Net 5");
+                            //SynthetizerHelper.CreateAudio(Path.Combine(_path, i.ToString()), item[_mediaInfo.field].ToString(), _mediaInfo.cultureInfo, _mediaInfo.audioFormat);
+                        }
 
-                        data += "\"" + i.ToString() + "\": \"" + item[_mediaInfo.field] + _mediaInfo.extension + "\"";
+                        data += "\"" + i + "\": \"" + item[_mediaInfo.field] + _mediaInfo.extension + "\"";
 
                         if (i < _ankiItems.Count() - 1)
                             data += ", ";
@@ -469,11 +472,11 @@ namespace AnkiSharp
 
                 reader.Close();
                 reader = SQLiteHelper.ExecuteSQLiteCommandRead(_conn, "SELECT models FROM col");
-                JObject models = null;
+                JsonDocument models = null;
 
                 while (reader.Read())
                 {
-                    models = JObject.Parse(reader.GetString(0));
+                    models = JsonDocument.Parse(reader.GetString(0));
                 }
                 
                 AddFields(models, mids);
@@ -504,15 +507,15 @@ namespace AnkiSharp
             }
         }
         
-        private void AddFields(JObject models, List<double> mids)
+        private void AddFields(JsonDocument models, List<double> mids)
         {
             var regex = new Regex("{{hint:(.*?)}}|{{type:(.*?)}}|{{(.*?)}}");
 
             foreach (var mid in mids)
             {
-                var qfmt = models["" + mid]["tmpls"].First["qfmt"].ToString().Replace("\"", "");
-                var afmt = models["" + mid]["tmpls"].First["afmt"].ToString();
-                var css = models["" + mid]["css"].ToString();
+                var qfmt = models.RootElement.GetProperty("" + mid).GetProperty("tmpls").EnumerateArray().First().GetProperty("qfmt").GetString()?.Replace("\"", "");
+                var afmt = models.RootElement.GetProperty("" + mid).GetProperty("tmpls").EnumerateArray().First().GetProperty("afmt").GetString();
+                var css = models.RootElement.GetProperty("" + mid).GetProperty("css").GetString();
 
                 afmt = afmt.Replace("{{FrontSide}}", qfmt);
 
