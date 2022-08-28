@@ -275,5 +275,5 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/
 nuget.exe
-AnkiSharp.nuspec
+AnkiNet.nuspec
 Readme/Anki-icon.svg.png

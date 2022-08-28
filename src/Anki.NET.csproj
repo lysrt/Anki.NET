@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Anki.NET</AssemblyName>
+    <RootNamespace>AnkiNet</RootNamespace>
 
-  <ItemGroup>
-    <None Remove="AnkiData\CardStyle.css" />
-    <None Remove="AnkiData\conf.json" />
-    <None Remove="AnkiData\dconf.json" />
-    <None Remove="AnkiData\decks.json" />
-    <None Remove="AnkiData\models.json" />
-    <None Remove="SqLiteCommands\CardsTable.txt" />
-    <None Remove="SqLiteCommands\ColumnTable.txt" />
-    <None Remove="SqLiteCommands\GravesTable.txt" />
-    <None Remove="SqLiteCommands\Indexes.txt" />
-    <None Remove="SqLiteCommands\NotesTable.txt" />
-    <None Remove="SqLiteCommands\RevLogTable.txt" />
-  </ItemGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <PackageId>Anki.NET</PackageId>
+    <Authors>lysrt</Authors>
+
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <PackageVersion>0.1.0</PackageVersion>
+
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="AnkiData\CardStyle.css">
@@ -34,29 +33,29 @@
     <EmbeddedResource Include="AnkiData\models.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\CardsTable.txt">
+    <EmbeddedResource Include="SqLiteCommands\CardsTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\ColumnTable.txt">
+    <EmbeddedResource Include="SqLiteCommands\ColumnTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\GravesTable.txt">
+    <EmbeddedResource Include="SqLiteCommands\GravesTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\Indexes.txt">
+    <EmbeddedResource Include="SqLiteCommands\Indexes.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\NotesTable.txt">
+    <EmbeddedResource Include="SqLiteCommands\NotesTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqLiteCommands\RevLogTable.txt">
+    <EmbeddedResource Include="SqLiteCommands\RevLogTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.14.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.23.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.8" />
   </ItemGroup>
 
 </Project>
