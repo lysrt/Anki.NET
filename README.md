@@ -1,41 +1,27 @@
-﻿# AnkiSharp
+﻿# Anki.NET
 
-[![NuGet](https://img.shields.io/nuget/v/AnkiSharp.svg)](https://www.nuget.org/packages/AnkiSharp)
-[![NuGet](https://img.shields.io/nuget/dt/AnkiSharp.svg)](https://www.nuget.org/packages/AnkiSharp)
 
-:tada: It's finally here! You can create automatically anki cards from your C# application. :tada:
+[![NuGet](https://img.shields.io/nuget/v/Anki.NET.svg)](https://www.nuget.org/packages/Anki.NET)
+[![NuGet](https://img.shields.io/nuget/dt/Anki.NET.svg)](https://www.nuget.org/packages/Anki.NET)
 
-### Contribute
+Create Anki decks and cards from your C# Application.
 
-#### Other languages
+```csharp
+Anki deck = new Anki("My Anki Deck");
 
-I'm looking for some developers to develop the Java, Javascript and Python version, If you are interested in it please contact me here : https://clement-jean.github.io/contact/
+deck.AddItem("Hello", "Bonjour");
 
-#### C#
+deck.CreateApkgFile("folder/");
+```
 
-You can find a to do list here : [To do list](https://github.com/AnkiTools/AnkiSharp/projects/1)
+## Acknowledgement
 
-### Youtube
+Anki.NET is a fork form the the archived [AnkiSharp](https://github.com/AnkiTools/AnkiSharp) project from [Clement-Jean](https://github.com/Clement-Jean). Thanks a lot for the hard work!
 
-- Basic use : https://www.youtube.com/watch?v=UesrtZkuEKg&t=3s
-- Automatic audio creation : https://www.youtube.com/watch?v=uG-NWQGlYvM
-
-### Debug
-
-AnkiSharp is using SourceLink (https://github.com/dotnet/sourcelink). It helps you debugging your program using this nuget.
-
-If you encounter an exception coming from Ankisharp:
-
-	- Put a breakpoint on the function which as a problem
-	- Once on the breakpoint, click on the 'Step Into' button (F11)
-
-Then you will be redirected in the AnkiSharp nuget code. Finally, please report the issue and start contributing.
-
-### Tutorial and documentation
-
-This repo as a wiki : [Wiki](https://github.com/AnkiTools/AnkiSharp/wiki). You can look at any function individually or follow the guide tour by click on the next link at the end of each page.
+## Usage
 
 ### Basic use
+
 ``` csharp
 AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
 
@@ -48,6 +34,7 @@ test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
 ```
 
 ### SetFields
+
 ``` csharp
 AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
 
@@ -63,6 +50,7 @@ test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
 ```
 
 ### SetCss
+
 ``` csharp
 AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
 
@@ -76,7 +64,9 @@ test.AddItem("House", "Maison");
 
 test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
 ```
+
 ### SetFormat
+
 ``` csharp
 AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
 
