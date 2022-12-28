@@ -1,17 +1,32 @@
 ﻿# Anki.NET
 
-
 [![NuGet](https://img.shields.io/nuget/v/Anki.NET.svg)](https://www.nuget.org/packages/Anki.NET)
 [![NuGet](https://img.shields.io/nuget/dt/Anki.NET.svg)](https://www.nuget.org/packages/Anki.NET)
 
-Create Anki decks and cards from your C# Application.
+Create and export Anki collections, decks, notes and cards from your C# applications.
 
 ```csharp
-Anki deck = new Anki("My Anki Deck");
+var noteType = new AnkiNoteType(1, "Basic")
+{
+    Fields = new[] { "Front", "Back" },
+    CardTypes = new[]
+    {
+        new AnkiCardType
+        (
+            Name: "Card 1",
+            Ordinal: 0,
+            QuestionFormat: "{{Front}}",
+            AnswerFormat: "{{Front}}<hr id=\"answer\">{{Back}}"
+        ),
+                
+    }
+};
+AnkiCollection collection = new AnkiCollection(noteType);
+AnkiDeck deck = collection.AddDeck("My Anki Deck");
 
-deck.AddItem("Hello", "Bonjour");
+collection.AddNote(deck, noteType, "Hello", "Bonjour");
 
-deck.CreateApkgFile("folder/");
+await new AnkiFileWriter().WriteCollectionToFile(collection, "/", "MyCollection.apkg");
 ```
 
 ## Acknowledgement
@@ -20,155 +35,73 @@ Anki.NET is a fork form the the archived [AnkiSharp](https://github.com/AnkiTool
 
 ## Usage
 
-### Basic use
+### AnkiCollection
+
+Start by creating an `AnkiCollection`. To add notes to the collection, you need a notes model (`AnkiNoteType`), you can pass in the constructor, like this.
+A note can correspond to one or several cards, if their model has several card tempates ('AnkiCardType').
 
 ``` csharp
-AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
-
-test.AddItem("Hello", "Bonjour");
-test.AddItem("How are you ?", "Comment ca va ?");
-test.AddItem("Flower", "fleur");
-test.AddItem("House", "Maison");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### SetFields
-
-``` csharp
-AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
-
-//Permits to set more than two fields 
-test.SetFields("English", "Spanish", "French");
-
-test.AddItem("Hello", "Hola", "Bonjour");
-test.AddItem("How are you ?", "Como estas?", "Comment ca va ?");
-test.AddItem("Flower", "flor", "fleur");
-test.AddItem("House", "Casa", "Maison");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### SetCss
-
-``` csharp
-AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
-
-//Permits to change the css of your cards by providing it a css string
-test.SetCss(_CSS_CONTENT_);
-
-test.AddItem("Hello", "Bonjour");
-test.AddItem("How are you ?", "Comment ca va ?");
-test.AddItem("Flower", "fleur");
-test.AddItem("House", "Maison");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### SetFormat
-
-``` csharp
-AnkiSharp.Anki test = new AnkiSharp.Anki(_NAME_OF_ANKI_PACKAGE_);
-
-test.SetFields("English", "Spanish", "French");
-
-//Everything before '<hr id=answer>' is the front of the card, everything after is the behind
-test.SetFormat("{0} - {1} \\n<hr id=answer>\\n {2}");
-
-test.AddItem("Hello", "Hola", "Bonjour");
-test.AddItem("How are you ?", "Como estas?",  "Comment ca va ?");
-test.AddItem("Flower", "Flor", "fleur");
-test.AddItem("House", "Casa", "Maison");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### Create deck from Apkg file
-
-``` csharp
-Anki test = new Anki(_NAME_OF_ANKI_PACKAGE_, new ApkgFile(_PATH_TO_APKG_FILE_)));
-
-// Be careful, keep the same format !
-test.AddItem("Fork", "El tenedor", "La fourchette");
-test.AddItem("Knife", "El cuchillo", "Le couteau");
-test.AddItem("Chopsticks", "Los palillos", "Les baguettes");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### ContainsItem
-
-``` csharp
-Anki test = new Anki(_NAME_OF_ANKI_PACKAGE_, new ApkgFile(_PATH_TO_APKG_FILE_));
-
-// Be careful, keep the same fields !
-var item = test.CreateAnkiItem(("Fork", "El tenedor", "La fourchette");
-
-if (test.ContainsItem(ankiItem) == false) // will not add if the card is entirely the same (same fields' value)
-    test.AddItem(ankiItem);
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### ContainsItem with lambda
-
-``` csharp
-Anki test = new Anki(_NAME_OF_ANKI_PACKAGE_, new ApkgFile(_PATH_TO_APKG_FILE_));
-
-var item = test.CreateAnkiItem("Hello", "Bonjour");
-
-if (test.ContainsItem(x => { return Equals(item["FrontSide"], x["FrontSide"]); }) == false) // will not add if front of the card already exists
-    test.AddItem(item);
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
-```
-
-### Generate Audio with MediaInfo
-
-``` csharp
-
-MediaInfo info = new MediaInfo()
+var noteType = new AnkiNoteType(1, "Basic (With hints)")
 {
-    cultureInfo = new System.Globalization.CultureInfo(_CULTURE_INFO_STRING_),
-    field = _FIELD_IN_WHICH_THE_AUDIO_WILL_BE_PLAYED_
+    Fields = new[] { "Front", "Back", "Help" },
+    CardTypes = new []
+    {
+        new AnkiCardType
+        (
+            "Forwards",
+            0,
+            "{{Front}}<br/>{{hint:Help}}",
+            "{{Front}}<hr id=\"answer\">{{Back}}"
+        ),
+        new AnkiCardType
+        (
+            "Backwards",
+            1,
+            "{{Back}}<br/>{{hint:Help}}",
+            "{{Back}}<hr id=\"answer\">{{Front}}"
+        )
+    }
 };
 
-Anki ankiObject = new Anki(_NAME_OF_ANKI_PACKAGE_, info);
-
-...
-
+var collection = new AnkiCollection(noteType);
 ```
 
-### Audio quality
-
-The current audio has a samples per second of 8000, 16 bits per sample and is in mono channel. If you would like to change it you can do it like this (be aware that the quality quickly increase or decrease the size of your deck):
+### AnkiDeck
 
 ``` csharp
+var collection = new AnkiCollection(noteType);
 
-MediaInfo info = new MediaInfo()
+var myDeck = collection.AddDeck("French vocabulary");
+
+var defaultDeck = collection.GetDeckById(1);
+var myDeckAgain = collection.GetDeckById(myDeck.Id);
+```
+
+### AnkiNote
+
+With the above `AnkiNoteType`, each added note will generate 2 different cards.
+
+```csharp
+collection.AddNote(defaultDeck, noteType, "Hello", "Bonjour", "");
+collection.AddNote(defaultDeck, noteType, "House", "Maison", "Starts with "M");
+```
+
+### Set CSS
+
+``` csharp
+var noteType = new AnkiNoteType(1, "Basic (with CSS)")
 {
-    cultureInfo = new System.Globalization.CultureInfo(_CULTURE_INFO_STRING_),
-    field = _FIELD_IN_WHICH_THE_AUDIO_WILL_BE_PLAYED_,
-	audioFormat = new SpeechAudioFormatInfo(_SAMPLES_PER_SECOND_, _BITS_PER_SAMPLE_, _AUDIO_CHANNEL_)
+    Css = @".card{
+        color: red;
+    }",
+    // ... 
 };
-
-Anki ankiObject = new Anki(_NAME_OF_ANKI_PACKAGE_, info);
-
-...
-
 ```
 
-### Hint fields
+### Read `AnkiCollection` from `.apkg` file
 
 ``` csharp
-Anki test = new Anki(_NAME_OF_ANKI_PACKAGE_);
-
-test.SetFields("Front", "hint:Hint", "Back");
-test.SetFormat("{0} - {1} \\n<hr id=answer(.*?)>\\n {2}");
-
-test.AddItem("好的", "ok", "d'accord");
-
-test.CreateApkgFile(_PATH_FOR_ANKI_FILE_);
+var collection = await AnkiFileReader.ReadCollection(_path);
 ```
 
 ## Resources
