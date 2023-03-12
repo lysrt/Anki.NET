@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Anki.NET</AssemblyName>
     <RootNamespace>AnkiNet</RootNamespace>
 
@@ -26,10 +26,11 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <ReleaseVersion>1</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath=""/>
+    <None Include="../../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
