@@ -277,3 +277,9 @@ __pycache__/
 nuget.exe
 AnkiNet.nuspec
 Readme/Anki-icon.svg.png
+
+# Visual Studio Code
+.vscode
+
+# Mac OS
+.DS_Store
