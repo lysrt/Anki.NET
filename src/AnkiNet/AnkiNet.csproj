@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Anki.NET</AssemblyName>
+    <RootNamespace>AnkiNet</RootNamespace>
+
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <PackageId>Anki.NET</PackageId>
+    <PackageVersion>2.0</PackageVersion>
+    <Authors>Lysrt,Clement-Jean</Authors>
+    <Description>Anki.NET allows you to create Anki decks and cards from your C# application.</Description>
+    <PackageTags>anki deck decks card cards</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/lysrt/Anki.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/lysrt/Anki.NET</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\CardsTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\ColTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\GravesTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\Indexes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\NotesTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CollectionFile\Database\Sql\RevLogTable.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.10" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="CollectionFile\Database\Sql\CardsTable.sql" />
+    <None Remove="CollectionFile\Database\Sql\ColTable.sql" />
+    <None Remove="CollectionFile\Database\Sql\GravesTable.sql" />
+    <None Remove="CollectionFile\Database\Sql\Indexes.sql" />
+    <None Remove="CollectionFile\Database\Sql\NotesTable.sql" />
+    <None Remove="CollectionFile\Database\Sql\RevLogTable.sql" />
+  </ItemGroup>
+</Project>

@@ -6,27 +6,27 @@
 Create and export Anki collections, decks, notes and cards from your C# applications.
 
 ```csharp
-var noteType = new AnkiNoteType(1, "Basic")
-{
-    Fields = new[] { "Front", "Back" },
-    CardTypes = new[]
-    {
-        new AnkiCardType
-        (
+var noteType = new AnkiNoteType(
+    name: "Basic",
+    cardTypes: new[] {
+        new AnkiCardType(
             Name: "Card 1",
             Ordinal: 0,
             QuestionFormat: "{{Front}}",
             AnswerFormat: "{{Front}}<hr id=\"answer\">{{Back}}"
-        ),
-                
-    }
-};
-AnkiCollection collection = new AnkiCollection(noteType);
-AnkiDeck deck = collection.AddDeck("My Anki Deck");
+        )
+    },
+    fieldNames: new[] { "Front", "Back" }
+);
 
-collection.AddNote(deck, noteType, "Hello", "Bonjour");
+var collection = new AnkiCollection();
 
-await new AnkiFileWriter().WriteCollectionToFile(collection, "/", "MyCollection.apkg");
+var noteTypeId = collection.CreateNoteType(noteType);
+var deckId = collection.CreateDeck("My Anki Deck");
+
+collection.CreateNote(deckId, noteTypeId, "Hello", "Bonjour");
+
+await AnkiFileWriter.WriteToFileAsync("MyCollection.apkg", collection);
 ```
 
 ## Acknowledgement
@@ -41,70 +41,78 @@ Start by creating an `AnkiCollection`. To add notes to the collection, you need 
 A note can correspond to one or several cards, if their model has several card tempates ('AnkiCardType').
 
 ``` csharp
-var noteType = new AnkiNoteType(1, "Basic (With hints)")
+var cardTypes = new[]
 {
-    Fields = new[] { "Front", "Back", "Help" },
-    CardTypes = new []
-    {
-        new AnkiCardType
-        (
-            "Forwards",
-            0,
-            "{{Front}}<br/>{{hint:Help}}",
-            "{{Front}}<hr id=\"answer\">{{Back}}"
-        ),
-        new AnkiCardType
-        (
-            "Backwards",
-            1,
-            "{{Back}}<br/>{{hint:Help}}",
-            "{{Back}}<hr id=\"answer\">{{Front}}"
-        )
-    }
+    new AnkiCardType(
+        "Forwards",
+        0,
+        "{{Front}}<br/>{{hint:Help}}",
+        "{{Front}}<hr id=\"answer\">{{Back}}"
+    ),
+    new AnkiCardType(
+        "Backwards",
+        1,
+        "{{Back}}<br/>{{hint:Help}}",
+        "{{Back}}<hr id=\"answer\">{{Front}}"
+    )
 };
 
-var collection = new AnkiCollection(noteType);
+var noteType = new AnkiNoteType(
+    "Basic (With hints)",
+    cardTypes,
+    new[] { "Front", "Back", "Help" }
+);
+        
+var collection = new AnkiCollection();
+var noteTypeId = collection.CreateNoteType(noteType);
 ```
 
 ### AnkiDeck
 
 ``` csharp
-var collection = new AnkiCollection(noteType);
+var collection = new AnkiCollection();
 
-var myDeck = collection.AddDeck("French vocabulary");
+var deckId = collection.CreateDeck("French vocabulary");
 
-var defaultDeck = collection.GetDeckById(1);
-var myDeckAgain = collection.GetDeckById(myDeck.Id);
+bool deckExists = collection.TryGetDeckById(deckId, out var deck);
 ```
 
 ### AnkiNote
 
-With the above `AnkiNoteType`, each added note will generate 2 different cards.
+With the above `AnkiNoteType` (which has two card types), each added note will generate 2 different cards.
 
 ```csharp
-collection.AddNote(defaultDeck, noteType, "Hello", "Bonjour", "");
-collection.AddNote(defaultDeck, noteType, "House", "Maison", "Starts with "M");
+collection.CreateNote(deckId, notetypeId, "Hello", "Bonjour", "");
+collection.CreateNote(deckId, noteTypeId, "House", "Maison", "Starts with \"M\"");
 ```
 
 ### Set CSS
 
 ``` csharp
-var noteType = new AnkiNoteType(1, "Basic (with CSS)")
-{
-    Css = @".card{
+var noteType = new AnkiNoteType(
+    name: "Basic",
+    cardTypes: cardTypes,
+    fieldNames: names,
+    css: @".card{
         color: red;
     }",
-    // ... 
-};
+);
 ```
 
 ### Read `AnkiCollection` from `.apkg` file
 
 ``` csharp
-var collection = await AnkiFileReader.ReadCollection(_path);
+AnkiCollection collection = await AnkiFileReader.ReadFromFileAsync("collection.apkg");
+```
+
+### Write `AnkiCollection` to `.apkg` file
+
+```csharp
+var collection = new AnkiCollection();
+await AnkiFileWriter.WriteToFileAsync("MyCollection.apkg", collection);
 ```
 
 ## Resources
 
-- [Anki APKG format documentation](http://decks.wikia.com/wiki/Anki_APKG_format_documentation)
 - [Database Structure](https://github.com/ankidroid/Anki-Android/wiki/Database-Structure)
+- [Anki Scripting](https://www.juliensobczak.com/write/2016/12/26/anki-scripting.html)
