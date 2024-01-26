@@ -47,6 +47,8 @@ public class AnkiFileWriterTests
         var deckId = collection.CreateDeck("C# Test");
         collection.CreateNote(deckId, noteTypeId, "Bonjour", "Hello", "B... H...");
         collection.CreateNote(deckId, noteTypeId, "Salut", "Hi", "S... Hi...");
+        collection.CreateNote(deckId, noteTypeId, "Ne le faites pas", @"don't");
+        collection.CreateNote(deckId, noteTypeId, "Test", @"""test""");
 
         //
         // 2. Write to file
