@@ -17,12 +17,17 @@ internal class NoteRepository : SqliteRepository<note>
         "[flds], [sfld], [csum], " +
         "[flags], [data]";
 
+    private static string SanitizeHtmlInput(string value)
+    {
+        return value.Replace(@"""", @"\""").Replace("'", @"''");
+    }
+    
     protected override string GetValues(note i)
     {
         return
             $"{i.id},'{i.guid}',{i.mid}," +
             $"{i.mod},{i.usn},'{i.tags}'," +
-            $"'{i.flds}','{i.sfld}',{i.csum}," +
+            $"'{SanitizeHtmlInput(i.flds)}','{SanitizeHtmlInput(i.sfld)}',{i.csum}," +
             $"{i.flags},'{i.data}'";
     }
 
